@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
@@ -20,14 +21,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Locale;
+
 public class NewInterfaceActivity extends AppCompatActivity {
 
     TextView tv1, tv2;
     Button back;
-    DatabaseReference mData;
+
+    private static final String DB_URL =
+        "https://autosar01-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+    private DatabaseReference myRefHumid, myRefTemp;
+    private ValueEventListener humidL, tempL;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_interface);
 
@@ -39,58 +47,92 @@ public class NewInterfaceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Return Screen MainActivity
-                onBackPressed();
+                startActivity(new Intent(NewInterfaceActivity.this, MainActivity.class));
+                finish();
             }
         });
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("doam");
-        DatabaseReference myRefNhietDo = database.getReference("nhietdo");
+        FirebaseDatabase database = FirebaseDatabase.getInstance(DB_URL);
+        DatabaseReference root = database.getReference("WeatherCurrent");
+        myRefHumid = root.child("Humidity");
+        myRefTemp = root.child("Temperature");
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String message = dataSnapshot.getValue(String.class);
-                // Update interface at main flow
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Display data in tv1
-                        tv1.setText(message);
-                    }
-                });
+//        myRefHumid.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot ds) {
+////                String message = dataSnapshot.getValue(String.class);
+//                String Humid = String.valueOf(ds.getValue());
+//                // Update interface at main flow
+////                runOnUiThread(new Runnable() {
+////                    @Override
+////                    public void run() {
+////                        // Display data in tv1
+////                        tv1.setText("Độ ẩm: " + Humid + "%");
+////                    }
+////                });
+//                runOnUiThread(() -> tv1.setText("Độ ẩm: " + Humid + "%"));
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Handler error (if have)
+//            }
+//        });
+//        myRefTemp.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot ds) {
+////                String nhietDo = dataSnapshot.getValue(String.class);
+//                String nhietDo = String.valueOf(ds.getValue());
+////                runOnUiThread(new Runnable() {
+////                    @Override
+////                    public void run() {
+////                        tv2.setText("Nhiệt độ: " + nhietDo); // Display temperature in tv2
+////                    }
+////                });
+//                runOnUiThread(() -> tv2.setText("Nhiệt độ: " + nhietDo + "°C"));
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Handler error (if have)
+//            }
+//        });
+        humidL = new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot ds) {
+                Object v = ds.getValue();
+                String s = (v == null) ? "--" : String.valueOf(v);
+                try {
+                    // format số nếu có thể (không bắt buộc)
+                    double d = Double.parseDouble(s);
+                    s = String.format(Locale.US, "%.0f", d);
+                } catch (Exception ignored) {}
+                tv1.setText("Độ ẩm: " + s + "%");
             }
+            @Override public void onCancelled(@NonNull DatabaseError error) { /* TODO: log/Toast nếu cần */ }
+        };
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Handler error (if have)
+        tempL = new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot ds) {
+                Object v = ds.getValue();
+                String s = (v == null) ? "--" : String.valueOf(v);
+                try {
+                    double d = Double.parseDouble(s);
+                    s = String.format(Locale.US, "%.1f", d);
+                } catch (Exception ignored) {}
+                tv2.setText("Nhiệt độ: " + s + "°C");
             }
-        });
-        myRefNhietDo.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String nhietDo = dataSnapshot.getValue(String.class);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv2.setText("Nhiệt độ: " + nhietDo); // Display temperature in tv2
-                    }
-                });
-            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { /* TODO */ }
+        };
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Handler error (if have)
-            }
-        });
+        myRefHumid.addValueEventListener(humidL);
+        myRefTemp.addValueEventListener(tempL);
     }
 
-    // Function return MainActivity
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(NewInterfaceActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish(); 
+    protected void onStop() {
+        super.onStop();
+        // Dọn listener khi rời màn
+        if (myRefHumid != null && humidL != null) myRefHumid.removeEventListener(humidL);
+        if (myRefTemp  != null && tempL  != null) myRefTemp.removeEventListener(tempL);
     }
 }

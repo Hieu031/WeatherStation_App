@@ -71,6 +71,9 @@ public class MainActivity1 extends AppCompatActivity {
     TextView tvTemp, tvTime, tvBui, tvCo, tvHumid, tvChatluong, tvtb, tvtb2;
     ImageView imageView;
 
+    private static final String DB_URL =
+            "https://autosar01-default-rtdb.asia-southeast1.firebasedatabase.app";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +89,7 @@ public class MainActivity1 extends AppCompatActivity {
         tvtb = findViewById(R.id.textViewtb);
         tvtb2 = findViewById(R.id.textViewtb2);
         imageView = findViewById(R.id.img);
+
         tvBui.addTextChangedListener(new MyTextWatcher());
         tvCo.addTextChangedListener(new MyTextWatcher());
         tvHumid.addTextChangedListener(new MyTextWatcher());
@@ -98,17 +102,21 @@ public class MainActivity1 extends AppCompatActivity {
         setVariable();
         setVariable1();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRefHumid = database.getReference("Humidity");
-        DatabaseReference myRefNhietDo = database.getReference("Temperature");
-        DatabaseReference myRefBui = database.getReference("Dust Density");
-        DatabaseReference myRefCo = database.getReference("Co Value");
-        DatabaseReference myRefRain = database.getReference("Rain");
+        FirebaseDatabase db = FirebaseDatabase.getInstance(DB_URL);
+        DatabaseReference database = db.getReference("WeatherCurrent");
+
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRefHumid = database.child("Humidity");
+        DatabaseReference myRefNhietDo = database.child("Temperature");
+        DatabaseReference myRefBui = database.child("Dust");
+        DatabaseReference myRefCo = database.child("Co");
+//        DatabaseReference myRefRain = database.getReference("Rain");
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.child("Rain").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String rain = dataSnapshot.getValue(String.class);
+//                String rain = dataSnapshot.getValue(String.class);
+                String rain = String.valueOf(dataSnapshot.getValue());
                 PRain = rain;
                 runOnUiThread(new Runnable() {
                     @Override
@@ -133,7 +141,8 @@ public class MainActivity1 extends AppCompatActivity {
         databaseReference.child("Humidity").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String humid = dataSnapshot.getValue(String.class);
+//                String humid = dataSnapshot.getValue(String.class);
+                String humid = String.valueOf(dataSnapshot.getValue());
                 PHumid = humid;
                 if (Double.parseDouble(humid) <70) {
                     tvtb.setText("Lời khuyên : Hãy uống nhiều nước ");
@@ -150,7 +159,8 @@ public class MainActivity1 extends AppCompatActivity {
         databaseReference.child("Temperature").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String temp = dataSnapshot.getValue(String.class);
+//                String temp = dataSnapshot.getValue(String.class);
+                String temp = String.valueOf(dataSnapshot.getValue());
                 PTemp = temp;
                 if (Double.parseDouble(temp) <15) {
                     tvtb.setText("Lời khuyên : Nhớ mặc áo ấm ");
@@ -167,7 +177,8 @@ public class MainActivity1 extends AppCompatActivity {
         databaseReference.child("Dust Density").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String bui = dataSnapshot.getValue(String.class);
+//                String bui = dataSnapshot.getValue(String.class);
+                String bui = String.valueOf(dataSnapshot.getValue());
                 PBui = bui;
                 if (Double.parseDouble(bui) > 65 ) {
                     tvtb.setText("Lời khuyên :Không nên ra ngoài");
@@ -188,7 +199,8 @@ public class MainActivity1 extends AppCompatActivity {
         databaseReference.child("Co Value").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String co = dataSnapshot.getValue(String.class);
+//                String co = dataSnapshot.getValue(String.class);
+                String co = String.valueOf(dataSnapshot.getValue());
                 PCo = co;
                 if (Double.parseDouble(co) > 650) {
                     tvtb.setText("Lời khuyên :Không nên ra ngoài");
@@ -207,7 +219,8 @@ public class MainActivity1 extends AppCompatActivity {
         myRefNhietDo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String nhietDo = dataSnapshot.getValue(String.class);
+//                String nhietDo = dataSnapshot.getValue(String.class);
+                String nhietDo = String.valueOf(dataSnapshot.getValue());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -224,7 +237,8 @@ public class MainActivity1 extends AppCompatActivity {
         myRefBui.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String Bui = dataSnapshot.getValue(String.class);
+//                String Bui = dataSnapshot.getValue(String.class);
+                String Bui = String.valueOf(dataSnapshot.getValue());
                 double buiValue = Double.parseDouble(Bui);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -244,7 +258,8 @@ public class MainActivity1 extends AppCompatActivity {
         myRefCo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String Co = dataSnapshot.getValue(String.class);
+//                String Co = dataSnapshot.getValue(String.class);\
+                String Co = String.valueOf(dataSnapshot.getValue());
                 double coValue = Double.parseDouble(Co);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -266,7 +281,8 @@ public class MainActivity1 extends AppCompatActivity {
         myRefHumid.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String Humid = dataSnapshot.getValue(String.class);
+//                String Humid = dataSnapshot.getValue(String.class);
+                String Humid = String.valueOf(dataSnapshot.getValue());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

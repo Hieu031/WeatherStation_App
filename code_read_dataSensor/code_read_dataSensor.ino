@@ -196,10 +196,10 @@ void sendDataToFirebase(SensorData data) {
   json.set("Dust", data.dust);
 
   Serial.printf("Sending data to Firebase path: %s\n", path.c_str());
-  bool ok = Firebase.RTDB.setJSON(&fbdo, path.c_str(), &json);
-
-  if (ok) {
-    Serial.printf("Send data to Firebase [%s] OK!\n", timestamp.c_str());
+  bool ok1 = Firebase.RTDB.setJSON(&fbdo, path.c_str(), &json);
+  bool ok2 = Firebase.RTDB.setJSON(&fbd0, "/WeatherCurrent", &json); 
+  if (ok1 && ok2) {
+    Serial.printf("OK: %s\n", timestamp.c_str());
     printSensorData(data);
   } 
   else 
