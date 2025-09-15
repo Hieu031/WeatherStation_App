@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "556082599594",
+    "firebase_url": "https://autosar01-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "autosar01",
+    "storage_bucket": "autosar01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556082599594:android:98d322f47b6cea6d5fa2d3",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWHDZpmegFJvtvpqBEA9UOv-6ueVuGBKw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
