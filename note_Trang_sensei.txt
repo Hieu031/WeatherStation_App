@@ -1,0 +1,12 @@
+Chương 1:
+Tổng quan, các linh kiện, phần cứng, phần mềm
+Chương 2:
+các phương pháp thiết kế, phần mềm, phần cứng
+Chu3:
+
+kiểm thử chức năng thêm test case
+1. Đặt ở các vị trí khác nhau
+2. Khi không có wifi, khi có wifi mạnh, yếu
+3. Khoảng cách từ app di động tới, mạch là bao nhiêu
+
+phần kiểm thử chiếm khoảng 10 trang.
